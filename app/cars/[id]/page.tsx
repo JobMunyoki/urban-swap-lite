@@ -120,7 +120,7 @@ export default function CarDetails() {
 
     <textarea
       placeholder="Additional message"
-      rows="4"
+      rows={4}
       className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 text-white outline-none focus:border-cyan-400"
     ></textarea>
 
