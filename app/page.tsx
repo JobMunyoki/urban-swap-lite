@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 const cars = [
   {
@@ -31,6 +34,11 @@ const cars = [
 ];
 
 export default function Home() {
+  const [search, setSearch] = useState("");
+  const filteredCars = cars.filter((car) =>
+  car.name.toLowerCase().includes(search.toLowerCase()) ||
+  car.type.toLowerCase().includes(search.toLowerCase())
+);
   return (
     <main className="min-h-screen bg-slate-900 text-white p-10">
       <div className="flex flex-col items-center justify-center text-center mb-16">
@@ -52,10 +60,19 @@ export default function Home() {
       </div>
 
       <section>
+        <div className="mb-6">
+  <input
+    type="text"
+    placeholder="Search cars..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="w-full md:w-96 px-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white outline-none focus:border-cyan-400"
+  />
+</div>
         <h2 className="text-2xl font-semibold mb-6">Available Cars</h2>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {cars.map((car) => (
+          {filteredCars.map((car) => (
             <div key={car.name} className="bg-slate-800 rounded-2xl overflow-hidden shadow-lg">
 
             <img
