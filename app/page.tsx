@@ -35,10 +35,17 @@ const cars = [
 
 export default function Home() {
   const [search, setSearch] = useState("");
-  const filteredCars = cars.filter((car) =>
-  car.name.toLowerCase().includes(search.toLowerCase()) ||
-  car.type.toLowerCase().includes(search.toLowerCase())
-);
+  const [category, setCategory] = useState("All");
+  const filteredCars = cars.filter((car) => {
+  const matchesSearch =
+    car.name.toLowerCase().includes(search.toLowerCase()) ||
+    car.type.toLowerCase().includes(search.toLowerCase());
+
+  const matchesCategory =
+    category === "All" || car.type === category;
+
+  return matchesSearch && matchesCategory;
+});
   return (
     <main className="min-h-screen bg-slate-900 text-white p-10">
       <div className="flex flex-col items-center justify-center text-center mb-16">
@@ -68,6 +75,21 @@ export default function Home() {
     onChange={(e) => setSearch(e.target.value)}
     className="w-full md:w-96 px-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white outline-none focus:border-cyan-400"
   />
+</div>
+<div className="flex flex-wrap gap-3 mb-6">
+  {["All", "SUV", "Compact"].map((item) => (
+    <button
+      key={item}
+      onClick={() => setCategory(item)}
+      className={`px-4 py-2 rounded-xl border transition ${
+        category === item
+          ? "bg-cyan-400 text-black border-cyan-400"
+          : "border-white/10 text-slate-300 hover:bg-white/10"
+      }`}
+    >
+      {item}
+    </button>
+  ))}
 </div>
         <h2 className="text-2xl font-semibold mb-6">Available Cars</h2>
 
