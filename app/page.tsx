@@ -55,18 +55,32 @@ export default function Home() {
           A modern car hire platform where users can browse, book, and manage vehicles easily.
         </p>
 
-        <div className="flex gap-4">
-          <button className="px-6 py-3 bg-cyan-400 text-black rounded-xl font-semibold hover:scale-105 transition">
-            Browse Cars
-          </button>
+        <div className="flex flex-wrap gap-4">
+  <button className="px-6 py-3 bg-cyan-400 text-black rounded-xl font-semibold hover:scale-105 transition">
+    Browse Cars
+  </button>
 
-          <button className="px-6 py-3 border border-white/20 rounded-xl hover:bg-white/10 transition">
-            List Your Car
-          </button>
-        </div>
-      </div>
+  <button className="px-6 py-3 border border-white/20 rounded-xl hover:bg-white/10 transition">
+    List Your Car
+  </button>
 
-      <section>
+  <Link
+    href="/login"
+    className="px-6 py-3 border border-cyan-400 text-cyan-400 rounded-xl hover:bg-cyan-400 hover:text-black transition"
+  >
+    Login
+  </Link>
+
+  <Link
+    href="/signup"
+    className="px-6 py-3 bg-white text-black rounded-xl font-semibold hover:scale-105 transition"
+  >
+    Sign Up
+  </Link>
+</div>
+</div>
+
+<section>
         <div className="mb-6">
   <input
     type="text"
