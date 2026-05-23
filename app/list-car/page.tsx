@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 export default function ListCarPage() {
+  const [submitted, setSubmitted] = useState(false);
   return (
     <main className="min-h-screen bg-slate-900 text-white p-10">
       <Link href="/" className="text-cyan-400 hover:underline">
@@ -13,7 +17,13 @@ export default function ListCarPage() {
           Add your vehicle details so customers can view and request bookings.
         </p>
 
-        <form className="grid gap-4">
+        <form
+  className="grid gap-4"
+  onSubmit={(e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  }}
+>
           <input
             type="text"
             placeholder="Car name e.g. Toyota Prado"
@@ -66,6 +76,11 @@ export default function ListCarPage() {
           >
             Submit Car Listing
           </button>
+          {submitted && (
+  <p className="text-green-400 text-center font-medium">
+    Car listing submitted successfully!
+  </p>
+)}
         </form>
       </div>
     </main>
