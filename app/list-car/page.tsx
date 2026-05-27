@@ -2,9 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function ListCarPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState("");
+  const [type, setType] = useState("");
+  const [transmission, setTransmission] = useState("");
+  const [fuel, setFuel] = useState("");
+  const [price, setPrice] = useState("");
+  const [image, setImage] = useState("");
+  const [description, setDescription] = useState("");
   return (
     <main className="min-h-screen bg-slate-900 text-white p-10">
       <Link href="/" className="text-cyan-400 hover:underline">
@@ -18,19 +26,50 @@ export default function ListCarPage() {
         </p>
 
         <form
-  className="grid gap-4"
-  onSubmit={(e) => {
-    e.preventDefault();
+          className="grid gap-4"
+          onSubmit={async (e) => {
+          e.preventDefault();
+
+  const { error } = await supabase.from("cars").insert([
+    {
+      name,
+      type,
+      transmission,
+      fuel,
+      price,
+      image,
+      description,
+    },
+  ]);
+
+  if (!error) {
     setSubmitted(true);
-  }}
+
+    setName("");
+    setType("");
+    setTransmission("");
+    setFuel("");
+    setPrice("");
+    setImage("");
+    setDescription("");
+  } else {
+    console.log(error);
+  }
+}}
 >
           <input
             type="text"
             placeholder="Car name e.g. Toyota Prado"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400"
           />
 
-          <select className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400">
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400"
+>
             <option>Car Type</option>
             <option>SUV</option>
             <option>Compact</option>
@@ -38,13 +77,21 @@ export default function ListCarPage() {
             <option>Van</option>
           </select>
 
-          <select className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400">
+          <select
+            value={transmission}
+            onChange={(e) => setTransmission(e.target.value)}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400"
+>
             <option>Transmission</option>
             <option>Automatic</option>
             <option>Manual</option>
           </select>
 
-          <select className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400">
+          <select
+            value={fuel}
+            onChange={(e) => setFuel(e.target.value)}
+            className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400"
+>
             <option>Fuel Type</option>
             <option>Petrol</option>
             <option>Diesel</option>
@@ -55,18 +102,24 @@ export default function ListCarPage() {
           <input
             type="text"
             placeholder="Price per day e.g. Ksh 5,000/day"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
             className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400"
           />
 
           <input
             type="text"
             placeholder="Image URL or image file name"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
             className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400"
           />
 
           <textarea
             rows={4}
             placeholder="Car description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             className="px-4 py-3 rounded-xl bg-slate-900 border border-white/10 outline-none focus:border-cyan-400"
           ></textarea>
 

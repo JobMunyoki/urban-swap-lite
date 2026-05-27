@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabase";
+
 
 const cars = [
   {
@@ -36,7 +38,26 @@ const cars = [
 export default function Home() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const filteredCars = cars.filter((car) => {
+  const [supabaseCars, setSupabaseCars] = useState<any[]>([]);
+  useEffect(() => {
+  async function fetchCars() {
+    const { data, error } = await supabase
+      .from("cars")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setSupabaseCars(data);
+    } else {
+      console.log(error);
+    }
+  }
+
+  fetchCars();
+}, []);
+  const allCars = [...supabaseCars, ...cars];
+
+  const filteredCars = allCars.filter((car) => {
   const matchesSearch =
     car.name.toLowerCase().includes(search.toLowerCase()) ||
     car.type.toLowerCase().includes(search.toLowerCase());

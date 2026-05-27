@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { supabase } from "../../lib/supabase";
+
 const cars = [
   {
     id: "toyota-prado",
@@ -41,9 +43,32 @@ const cars = [
 
 export default function CarDetails() {
   const [submitted, setSubmitted] = useState(false);
-  const params = useParams();
 
-  const car = cars.find((item) => item.id === params.id);
+  const [customerName, setCustomerName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [message, setMessage] = useState("");
+  const params = useParams();
+  const [dbCar, setDbCar] = useState<any>(null);
+  useEffect(() => {
+  async function fetchCar() {
+    const { data, error } = await supabase
+      .from("cars")
+      .select("*")
+      .eq("id", params.id)
+      .single();
+
+    if (!error && data) {
+      setDbCar(data);
+    }
+  }
+
+  fetchCar();
+}, [params.id]);
+
+  const demoCar = cars.find((item) => item.id === params.id);
+  const car = dbCar || demoCar;
 
   if (!car) {
     return (
@@ -89,31 +114,64 @@ export default function CarDetails() {
 
   <form
   className="space-y-4"
-  onSubmit={(e) => {
-    e.preventDefault();
+  onSubmit={async (e) => {
+  e.preventDefault();
+
+  const { error } = await supabase.from("bookings").insert([
+    {
+      car_id: String(car.id),
+      car_name: car.name,
+      customer_name: customerName,
+      phone: phone,
+      start_date: startDate,
+      end_date: endDate,
+      message: message,
+      status: "Pending",
+    },
+  ]);
+
+  if (error) {
+    console.log(error);
+    alert("Booking failed");
+  } else {
     setSubmitted(true);
-  }}
+
+    setCustomerName("");
+    setPhone("");
+    setStartDate("");
+    setEndDate("");
+    setMessage("");
+  }
+}}
 >
     <input
       type="text"
       placeholder="Full Name"
+      value={customerName}
+      onChange={(e) => setCustomerName(e.target.value)}
       className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 text-white outline-none focus:border-cyan-400"
     />
 
     <input
       type="tel"
       placeholder="Phone Number"
+      value={phone}
+      onChange={(e) => setPhone(e.target.value)}
       className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 text-white outline-none focus:border-cyan-400"
     />
 
     <div className="grid md:grid-cols-2 gap-4">
       <input
         type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
         className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 text-white outline-none focus:border-cyan-400"
       />
 
       <input
         type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
         className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 text-white outline-none focus:border-cyan-400"
       />
     </div>
@@ -121,6 +179,8 @@ export default function CarDetails() {
     <textarea
       placeholder="Additional message"
       rows={4}
+      value={message}
+    onChange={(e) => setMessage(e.target.value)}
       className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-white/10 text-white outline-none focus:border-cyan-400"
     ></textarea>
 
