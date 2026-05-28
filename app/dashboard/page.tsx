@@ -3,27 +3,51 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState<any[]>([]);
 
-  useEffect(() => {
-    async function fetchBookings() {
-      const { data, error } = await supabase
-        .from("bookings")
-        .select("*")
-        .order("created_at", { ascending: false });
+ useEffect(() => {
+  async function checkUserAndFetchBookings() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      if (!error && data) {
-        setBookings(data);
-      } else {
-        console.log(error);
-      }
+    if (!user) {
+      router.push("/login");
+      return;
     }
 
-    fetchBookings();
-  }, []);
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("*")
+      .order("created_at", { ascending: false });
 
+    if (!error && data) {
+      setBookings(data);
+    } else {
+      console.log(error);
+    }
+
+    setLoading(false);
+  }
+
+  checkUserAndFetchBookings();
+}, [router]);
+async function handleLogout() {
+  await supabase.auth.signOut();
+  router.push("/login");
+}
+if (loading) {
+  return (
+    <main className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+      <p className="text-cyan-400">Checking access...</p>
+    </main>
+  );
+}
   async function updateBookingStatus(id: string, status: string) {
   const { error } = await supabase
     .from("bookings")
@@ -51,12 +75,22 @@ export default function Dashboard() {
         ← Back to Home
       </Link>
 
-      <div className="mt-8 mb-8">
+      <div className="mt-8 mb-8 flex items-center justify-between">
+      <div>
         <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+
         <p className="text-slate-300 mt-2">
-          Manage booking requests and vehicle activity.
-        </p>
-      </div>
+      Manage booking requests and vehicle activity.
+    </p>
+  </div>
+
+  <button
+    onClick={handleLogout}
+    className="px-5 py-2 bg-red-500 hover:bg-red-600 rounded-xl font-semibold"
+  >
+    Logout
+  </button>
+</div>
 
       <div className="grid md:grid-cols-3 gap-6 mb-10">
         <div className="bg-slate-800 rounded-2xl p-6">
