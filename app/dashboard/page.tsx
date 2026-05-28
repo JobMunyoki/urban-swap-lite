@@ -24,6 +24,23 @@ export default function Dashboard() {
     fetchBookings();
   }, []);
 
+  async function updateBookingStatus(id: string, status: string) {
+  const { error } = await supabase
+    .from("bookings")
+    .update({ status })
+    .eq("id", id);
+
+  if (!error) {
+    setBookings((currentBookings) =>
+      currentBookings.map((booking) =>
+        booking.id === id ? { ...booking, status } : booking
+      )
+    );
+  } else {
+    console.log(error);
+  }
+}
+
   const pendingBookings = bookings.filter(
     (booking) => booking.status === "Pending"
   );
@@ -87,17 +104,41 @@ export default function Dashboard() {
                   <p className="text-slate-400 text-sm">Booking Dates</p>
                 </div>
 
-                <p
-                  className={
-                    booking.status === "Approved"
-                      ? "text-green-400 font-semibold"
-                      : booking.status === "Rejected"
-                      ? "text-red-400 font-semibold"
-                      : "text-yellow-400 font-semibold"
-                  }
-                >
-                  {booking.status}
-                </p>
+                <div className="flex gap-3 items-center">
+  <p
+    className={
+      booking.status === "Approved"
+        ? "text-green-400 font-semibold"
+        : booking.status === "Rejected"
+        ? "text-red-400 font-semibold"
+        : "text-yellow-400 font-semibold"
+    }
+  >
+    {booking.status}
+  </p>
+
+  {booking.status === "Pending" && (
+    <>
+      <button
+        onClick={() =>
+          updateBookingStatus(booking.id, "Approved")
+        }
+        className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm"
+      >
+        Approve
+      </button>
+
+      <button
+        onClick={() =>
+          updateBookingStatus(booking.id, "Rejected")
+        }
+        className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm"
+      >
+        Reject
+      </button>
+    </>
+  )}
+</div>
               </div>
             ))}
           </div>
