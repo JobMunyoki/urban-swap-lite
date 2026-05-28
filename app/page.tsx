@@ -81,9 +81,12 @@ export default function Home() {
     Browse Cars
   </button>
 
-  <button className="px-6 py-3 border border-white/20 rounded-xl hover:bg-white/10 transition">
-    List Your Car
-  </button>
+  <Link
+  href="/list-car"
+  className="px-6 py-3 border border-white/20 rounded-xl hover:bg-white/10 transition"
+>
+  List Your Car
+</Link>
 
   <Link
     href="/login"
